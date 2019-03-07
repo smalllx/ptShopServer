@@ -1,0 +1,14 @@
+{ 
+    "_id" : "goods001", 
+    "price" : NumberInt(100), 
+    "url" : "../static/img/a1.jpg", 
+    "introduct" : "西铁城日本官方正品光动能休闲时尚皮带钢带防水男表BM7140", 
+    "goodsid" : "goods001"
+}
+{ 
+    "_id" : "goods002", 
+    "price" : 998.0, 
+    "url" : "../static/img/a2.jpg", 
+    "introduct" : "goods2", 
+    "goodsid" : "goods002"
+}

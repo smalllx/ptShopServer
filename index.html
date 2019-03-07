@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>nodeMongoDB</title>
+	<script src="node_modules/jquery/dist/jquery.min.js"></script>
+</head>
+<body>
+	<button onclick="query()">发起请求</button>
+	<button onclick="add()">新增数据</button>
+	<input type="text" name="user">
+	<input type="password" name="pwd">
+	<input type="button" name="good001" value="gooods001" onclick="goodsadd(this)">
+	<input type="button" name="good002" value="gooods002" onclick="goodsadd(this)">
+
+	<button onclick="addcar">加入购物车</button>
+</body>
+<script type="text/javascript">
+var baseURL = "http://localhost:3000";
+var query = function(){
+	$.ajax({
+        type: "get",
+        async: true,
+        url: baseURL + '/',
+        dataType: "json",
+        success: function(msg) {
+        	console.log(msg)
+        	console.log("请求成功！")
+        },
+        error: function() {
+            console.log('error')
+        }
+    });
+}
+var add = function(){
+	var ajaxdata = {name:'lxxx',pwd:'123123'}
+	$.ajax({
+        type: "post",
+        async: true,
+        data: ajaxdata,
+        url: baseURL + '/add',
+        dataType: "json",
+        success: function(msg) {
+        	console.log(msg)
+        	console.log("请求成功！")
+        },
+        error: function() {
+            console.log('error')
+        }
+    });
+}
+var goodsadd = function(e){
+	console.log($(e).attr('name'))
+	var ajaxdata = {
+					NAME:$('input[name="user"]').val(),
+					PWD:$('input[name="pwd"]').val(),
+					goods:$(e).attr('name'),
+					num:1
+				}
+	$.ajax({
+        type: "post",
+        async: true,
+        data: ajaxdata,
+        url: baseURL + '/goodsadd',
+        dataType: "json",
+        success: function(msg) {
+        	console.log(msg)
+        	console.log("添加购物车成功！")
+        },
+        error: function() {
+            console.log('error')
+        }
+    });
+}
+</script>
+</html>

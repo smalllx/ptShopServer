@@ -1,0 +1,35 @@
+{ 
+    "_id" : ObjectId("5c7e0e6d5c2dd50b0870de14"), 
+    "goods" : [
+        {
+            "goodsId" : "goods001", 
+            "num" : NumberInt(3)
+        }, 
+        {
+            "_id" : ObjectId("5c80ba22d4a0ac3e90a6ffcd"), 
+            "goodsId" : "goods002", 
+            "num" : NumberInt(2)
+        }
+    ], 
+    "name" : "root", 
+    "pwd" : "root", 
+    "__v" : NumberInt(0)
+}
+{ 
+    "_id" : ObjectId("5c7f978acadd75476c8c5765"), 
+    "goods" : [
+        {
+            "_id" : ObjectId("5c80aa6a5b3a313398daf25e"), 
+            "goodsId" : "goods002", 
+            "num" : NumberInt(12)
+        }, 
+        {
+            "_id" : ObjectId("5c80bdd99eeeba1734f17ada"), 
+            "goodsId" : "goods001", 
+            "num" : NumberInt(4)
+        }
+    ], 
+    "name" : "123", 
+    "pwd" : "123", 
+    "__v" : NumberInt(2)
+}

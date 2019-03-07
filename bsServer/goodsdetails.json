@@ -1,0 +1,84 @@
+{ 
+    "_id" : "goods001", 
+    "borned" : "福建 莆田", 
+    "attr" : [
+        "大", 
+        "中", 
+        "小"
+    ], 
+    "comments" : [
+        {
+            "user" : "匿名用户", 
+            "say" : "好！", 
+            "sayTime" : "2018-11-11"
+        }, 
+        {
+            "user" : "匿名用户", 
+            "say" : "好000！", 
+            "sayTime" : "2018-10-10"
+        }, 
+        {
+            "user" : "匿名用户", 
+            "say" : "1325", 
+            "sayTime" : "2019/3/6"
+        }
+    ], 
+    "url" : "../static/img/a1.jpg", 
+    "sale" : NumberInt(100), 
+    "introduct" : "西铁城日本官方正品光动能休闲时尚皮带钢带防水男表BM7140", 
+    "price" : 1299.0, 
+    "addTime" : "2018-8-8", 
+    "total" : NumberInt(20), 
+    "goodsid" : "goods001"
+}
+{ 
+    "_id" : "goods002", 
+    "borned" : "福建 莆田", 
+    "attr" : [
+        "m", 
+        "s", 
+        "l"
+    ], 
+    "comments" : [
+        {
+            "user" : "匿名用户", 
+            "say" : "321321", 
+            "sayTime" : "2019-1-2"
+        }
+    ], 
+    "url" : "../static/img/a2.jpg", 
+    "sale" : NumberInt(166), 
+    "introduct" : "goods002", 
+    "price" : 998.0, 
+    "addTime" : "2018-8-8", 
+    "total" : NumberInt(10), 
+    "goodsid" : "goods002"
+}
+{ 
+    "_id" : ObjectId("5c7f814cf6ac86d322d12333"), 
+    "borned" : "福建 莆田", 
+    "attr" : [
+        "大", 
+        "中", 
+        "小"
+    ], 
+    "comments" : [
+        {
+            "user" : "匿名用户", 
+            "say" : "好！", 
+            "sayTime" : "2018-1-11"
+        }, 
+        {
+            "user" : "匿名用户", 
+            "say" : "好！", 
+            "sayTime" : "2019-10-10"
+        }
+    ], 
+    "url" : "../static/img/a1.jpg", 
+    "sale" : 99.0, 
+    "introduct" : "男表BM7140", 
+    "price" : 1299.0, 
+    "addTime" : "2018-8-8", 
+    "total" : NumberInt(20), 
+    "goodsid" : "goods003"
+}
