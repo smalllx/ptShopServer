@@ -201,4 +201,69 @@ router.post('/searchgoods', function(req, res) {
 		}
 	})
 })
+//admin 操作
+//查询
+router.post('/admin', function(req, res) {
+	GoodsDetailModel.find({},function(err,docs){
+		if(!err){
+			res.send(docs)
+		}
+	})
+})
+//新增
+router.post('/adminadd', function(req, res) {
+	var attr = req.body.attr.split(',');
+	var goodsid = new Date().getTime();
+	GoodsDetailModel.create({"goodsid":goodsid,
+							"url":req.body.url,
+							"attr":attr,
+							"total":req.body.total,
+							"borned":req.body.borned,
+							"price":req.body.price,
+							"addTime":req.body.addTime,
+							"introduct":req.body.introduct},function(err){
+		if(!err){
+			GoodsListModel.create({"goodsid":goodsid,"url":req.body.url,"price":req.body.price},function(err){
+				if(!err){
+					res.send({msg:"ok"})
+				}
+			})
+		}
+	})
+})
+//根据id删除商品
+router.post('/admindelete', function(req, res) {
+	GoodsDetailModel.deleteOne({goodsid:req.body.goodsid},function(err){
+		if(!err){
+			GoodsListModel.deleteOne({goodsid:req.body.goodsid},function(err){
+				if(!err){
+					res.send({msg:"ok"})
+				}
+			})
+		}
+	})
+})
+//根据id修改商品信息
+router.post('/adminedit', function(req, res) {
+	var attr = req.body.attr.split(',');
+	// console.log(attr);
+	// console.log(req.body.attr)
+	GoodsDetailModel.update({goodsid:req.body.goodsid},{$set:{
+		attr:attr,
+		price:req.body.price,
+		borned:req.body.borned,
+		url:req.body.url,
+		total:req.body.total
+	}},function(err){
+		if(!err){
+			GoodsListModel.update({goodsid:req.body.goodsid},{$set:{
+			price:req.body.price,
+			url:req.body.url,}},function(err){
+				if(!err){
+					res.send({"msg":"ok"})
+				}
+			})
+		}
+	})
+})
 module.exports = router;

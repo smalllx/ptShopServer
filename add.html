@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>添加商品</title>
+    <link rel="stylesheet" type="text/css" href="js/layui/css/layui.css">
+    <script src="js/layui/layui.js"></script>
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <style type="text/css">
+    	h2{
+    		padding: 20px;
+    		margin-left: 30px;
+    		font-weight: bold;
+    	}
+        #img_div {
+            position: relative;
+            width: 250px;
+            box-sizing: border-box;
+        }
+
+        #picture{
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+	<h2>添加商品</h2>
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">商品名称：</label>
+            <div class="layui-input-block">
+                <input type="text" name="introduct" required lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">商品图片地址：</label>
+            <div class="layui-input-block">
+                <input type="text" name="url" required lay-verify="required" placeholder="请输入图片路径" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">商品发货地：</label>
+            <div class="layui-input-block">
+                <input type="text" name="borned" required lay-verify="required" placeholder="商品发货地" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">商品价格：</label>
+            <div class="layui-input-block">
+                <input type="number" min="0" name="price" required lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">型号：</label>
+            <div class="layui-input-block">
+                <input class="layui-input" type="text" name="attr" required lay-verify="required">
+                <p style="color: red;font-size: 12px">*多个参数用英文逗号隔开(',')</p>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">库存总量：</label>
+            <div class="layui-input-block">
+                <input type="number" min="1" name="total" required lay-verify="required"  autocomplete="off" class="layui-input">
+            </div>
+        </div>
+		<div class="layui-form-item">
+            <label class="layui-form-label">上市时间：</label>
+            <div class="layui-input-block">
+            	<input type="text" class="layui-input" id="test1" name="addTime" required lay-verify="required"  autocomplete="off">
+            </div>
+        </div>
+        <!-- <div class="layui-form-item">
+            <div id="img_div">
+                <input type="file" id="img_upload">
+                <img id="picture" src="" alt="头像" class="img-rounded">
+            </div>
+        </div> -->
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+    <script>
+	var baseURL = "http://localhost:3000";
+    var fAttr = [];
+    //为头像上传设置实时预览监听器
+
+    // function setOnchangeListener() {
+    //     $("body").on("change","#img_upload",previewFile);
+    // }
+
+    // //实时预览上传图片
+    // function previewFile() {
+    //     var preview=$("#picture");
+    //     var file=$("#img_upload")[0].files[0];
+    //     var reader=new FileReader();
+    //     reader.addEventListener("load",function () {
+    //        preview.prop("src",reader.result);
+    //     },false);
+    //     if(file){
+    //         reader.readAsDataURL(file);
+    //     }
+    // }
+    // setOnchangeListener();
+    var getid = function(index){
+    	layui.use(['form','laydate','layer'], function() {
+	        var form = layui.form;
+	        var layer = layui.layer;
+	        var laydate = layui.laydate;
+		    //执行一个laydate实例
+		    laydate.render({
+		    	elem: '#test1' //指定元素
+		    });
+	        //监听提交
+	        form.on('submit(formDemo)', function(data) {
+	        	fAttr = [];
+	            //layer.msg(JSON.stringify(data.field));
+	            //console.log(JSON.stringify(data.field))
+                //var file=$("#img_upload")[0].files[0];
+                //console.log(file)
+                //if(file==null)
+                //   return;
+                //var fileData=new FormData();
+                //fileData.append('file',file);
+	            var formdata = data.field;
+	           	// $.each($('input:checkbox'),function(){
+	            //     if(this.checked){
+	            //     	var key = this.name;
+	            //     	delete(formdata[key])
+	            //        fAttr.push($(this).val());
+	            //     }
+	            // });
+	            // fAttr = fAttr.toString()
+	            // formdata.attr = fAttr;
+	            //formdata.id = id;
+	            // console.log(JSON.stringify(formdata))
+                console.log(formdata)
+	            $.ajax({
+				    type: "post",
+				    async: true,
+				    url: baseURL+'/adminadd',
+				    data:formdata,
+				    dataType: "json",
+				    success: function(msg) {
+                        if(msg.msg=="ok"){
+                            parent.parent.layer.msg("添加成功！",{"icon":6,"time":2000});
+                            parent.layer.close(index);
+                            parent.location.reload();
+                        }
+				    },
+				    error: function() {
+				        console.log('error')
+				    }
+				});
+
+	        });
+    	});
+    }
+    </script>
+</body>
+
+</html>
