@@ -74,7 +74,11 @@ router.post('/goodscom', function(req, res) {
 router.post('/user', function(req, res) {
 	UserModel.findOne({name:req.body.user,pwd:req.body.pwd},function(err,doc){
 		if(!err){
-			res.send({msg:'ok'})
+			if(doc){
+				res.send({msg:'ok'})
+			}else{
+				res.send({msg:'none'})
+			}
 		}
 	})
 })
@@ -141,8 +145,15 @@ router.post('/goodscar', function(req, res) {
 				doc.goods.forEach((item,index) => {
 					GoodsDetailModel.findOne({goodsid:item.goodsId},function(err,goods){
 						if(!err){
-							gsum.push(goods)
-							gnum.push(item.num)
+							if(goods){
+								gsum.push(goods)
+								gnum.push(item.num)
+							}
+							else{
+								// console.log("f")
+								gsum.push({goodsid:item.goodsId,price:0,introduct:"该商品已下架！",url:'../static/img/notIn.png'})
+								gnum.push(item.num)
+							}
 							if(doc.goods.length == (index+1)){
 								res.send({msg:"ok",goods:gsum,goodsnum:gnum})
 							}
@@ -157,19 +168,9 @@ router.post('/goodscar', function(req, res) {
 })
 //根据id删除购物车商品
 router.post('/deletegoods', function(req, res) {
-	UserModel.findOne({name:req.body.user},function(err,doc){
+	UserModel.updateOne({name:req.body.user},{$pull:{goods:{goodsId:req.body.goodsid}}},function(err){
 		if(!err){
-			if(doc.goods){
-				doc.goods.forEach((item,index) => {
-					if(item.goodsId == req.body.goodsid){
-						doc.goods.splice(index,1)
-						return
-					}
-				})
-				doc.save(err=>{
-					res.send({msg:"ok"})
-				})
-			}
+			res.send({msg:"ok"})
 		}
 	})
 })
@@ -223,11 +224,18 @@ router.post('/adminadd', function(req, res) {
 							"addTime":req.body.addTime,
 							"introduct":req.body.introduct},function(err){
 		if(!err){
-			GoodsListModel.create({"goodsid":goodsid,"url":req.body.url,"price":req.body.price},function(err){
-				if(!err){
+			GoodsListModel.create({ "goodsid":goodsid,
+									"introduct":req.body.introduct,
+									"url":req.body.url,
+									"price":req.body.price},function(err2){
+				if(!err2){
 					res.send({msg:"ok"})
+				}else{
+					res.send({msg:"failed"})
 				}
 			})
+		}else{
+			res.send({msg:"failed"})
 		}
 	})
 })

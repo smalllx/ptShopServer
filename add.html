@@ -146,13 +146,17 @@
 				    data:formdata,
 				    dataType: "json",
 				    success: function(msg) {
-                        if(msg.msg=="ok"){
-                            parent.parent.layer.msg("添加成功！",{"icon":6,"time":2000});
+                        parent.parent.layer.msg("添加成功！",{"icon":6,"time":2000});
                             parent.layer.close(index);
                             parent.location.reload();
-                        }
+                        // if(msg.msg=="ok"){
+                        //     parent.parent.layer.msg("添加成功！",{"icon":6,"time":2000});
+                        //     parent.layer.close(index);
+                        //     parent.location.reload();
+                        // }
 				    },
-				    error: function() {
+				    error: function(err) {
+                        console.log(err)
 				        console.log('error')
 				    }
 				});
