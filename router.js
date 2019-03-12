@@ -18,7 +18,8 @@ var Schema = mongoose.Schema;
 var userSchema = new Schema({
 	name:String,
 	pwd:String,
-	goods:[{goodsId:String,num:Number}]
+	goods:[{goodsId:String,num:Number}],
+	buy:Array
 })
 var UserModel = mongoose.model('user',userSchema);
 
@@ -39,7 +40,7 @@ var goodsDetailSchema = new Schema({
 	borned:String,
 	attr:Array,
 	comments:Array,
-	sale:Number,
+	sale:{type:Number,default:0},
 	addTime:String,
 	total:Number,
 	goodsid:String
@@ -188,6 +189,25 @@ router.post('/goodstotal', function(req, res) {
 		}
 	})
 })
+//购买商品
+router.post('/buygoods', function(req, res) {
+	var goods = req.body.buy;
+	var name = req.body.user;
+	var nums = req.body.nums;
+	goods.forEach((item,index) => {
+		UserModel.update({name:name},{$addToSet:{"buy":item},$pull:{goods:{goodsId:item}}},function(err){
+			if(!err){
+				GoodsDetailModel.update({goodsid:item},{$inc:{sale:nums[index]}},function(err){
+					if(!err){
+						if(nums.length-1 == index){
+							res.send({msg:'ok'})
+						}
+					}
+				})
+			}
+		})
+	})
+})
 //根据搜索关键词进行模糊查询
 router.post('/searchgoods', function(req, res) {
 	GoodsListModel.find({introduct:{'$regex': req.body.key, $options: '$i'}},function(err,docs){
@@ -222,6 +242,7 @@ router.post('/adminadd', function(req, res) {
 							"borned":req.body.borned,
 							"price":req.body.price,
 							"addTime":req.body.addTime,
+							"sale":0,
 							"introduct":req.body.introduct},function(err){
 		if(!err){
 			GoodsListModel.create({ "goodsid":goodsid,
@@ -271,6 +292,20 @@ router.post('/adminedit', function(req, res) {
 					res.send({"msg":"ok"})
 				}
 			})
+		}
+	})
+})
+// admin 获取top5
+router.post('/chartdata', function(req, res) {
+	var xdata = [];
+	var seriesD = [];
+	GoodsDetailModel.find({},{sale:1,introduct:1},{sort:{sale:-1},limit:5},function(err,docs){
+		if(!err){
+			docs.forEach(item => {
+				xdata.push(item.introduct);
+				seriesD.push(item.sale)
+			})
+			res.send({xdata:xdata,seriesD:seriesD})
 		}
 	})
 })

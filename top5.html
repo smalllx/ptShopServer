@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ECharts</title>
+</head>
+<body>
+    <!-- 为ECharts准备一个具备大小（宽高）的DOM容器-->
+    <div id='main' style='width:80%;height:600px;margin: 100px auto;'></div>
+    <script src="js/jquery.min.js"></script>
+   <!-- 引入ECharts文件 -->
+    <script src='js/echarts/echarts2.js'></script>
+    <script>
+    	var baseURL = "http://localhost:3000";
+    	var e = function(xdata,seriesD){
+	        var myChart = echarts.init(document.getElementById('main'));
+	          //指定图表的配置项和数据
+	        var option = {
+	            title:{
+	                text:'PTshop TOP5 商品',
+	                x:'center'
+
+	            },
+	            //提示框组件
+	            tooltip:{
+	                //坐标轴触发，主要用于柱状图，折线图等
+	                trigger:'axis'
+	            },
+	            color: ['#6CD7D9','#CBBDE7','#1E90FF','#59CB59','#DD8D56','#D87A80','#2EC7C9','#E5CF0D','#93E093','#6F9FA7','#334553','#334553','#B34038'],
+	            //图例
+	            legend:{
+	                data:['销量'],
+	                orient : 'vertical',
+	        		x :'left'
+	            },
+			    toolbox: {
+			        show : true,
+			        feature : {
+			            mark : {show: true},
+			            dataView : {show: true, readOnly: false},
+			            magicType : {show: true, type: ['line', 'bar']},
+			            restore : {show: true},
+			            saveAsImage : {show: true}
+			        }
+			    },
+			    calculable : true,
+	            //横轴
+	            xAxis : [
+			        {
+			            type : 'category',
+			            data : xdata ,
+			            axisLabel:{
+			            	rotate:30
+			            }
+			        }
+			    ],
+	            //纵轴
+	            yAxis:[{
+		            type : 'value'
+		        }],
+	            //添加横线滚动条
+		  //     	dataZoom: {
+		  //     		start:0, //默认为0
+		  //         	end: 10, //默认为100
+		  //   		orient: 'horizontal',      // 布局方式，默认为水平布局，可选为：
+		  //     		show:true,// 'horizontal' ¦ 'vertical'
+		  //   		backgroundColor: 'rgba(0,0,0,0)',       // 背景颜色
+		  //   		dataBackgroundColor: '#eee',            // 数据背景颜色
+		  //   		fillerColor: 'rgba(144,197,237,0.2)',   // 填充颜色
+		  //   		handleColor: 'rgba(70,130,180,0.8)'     // 手柄颜色
+				// },
+	            //系列列表。每个系列通过type决定自己的图表类型
+	            series:[{
+	                name:"销量",
+	                //折线图
+	                type:'bar',
+	                data:seriesD
+	            }]
+	        };
+	        //使用刚指定的配置项和数据显示图表
+	        myChart.setOption(option);
+    	}
+        $(function(){
+        	$.ajax({
+			    type: "post",
+			    async: true,
+			    url: baseURL+'/chartdata',
+			    dataType: "json",
+			    success: function(msg) {
+			        console.log(msg)
+			        e(msg.xdata,msg.seriesD)
+			    },
+			    error: function() {
+			        console.log('error')
+			    }
+			});
+        })
+    </script>
+</body>
+</html>
