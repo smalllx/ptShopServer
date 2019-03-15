@@ -19,7 +19,8 @@ var userSchema = new Schema({
 	name:String,
 	pwd:String,
 	goods:[{goodsId:String,num:Number}],
-	buy:Array
+	buy:Array,
+	address:[{name:String,tel:String,add:String,select:{type:Boolean,default:false}}]
 })
 var UserModel = mongoose.model('user',userSchema);
 
@@ -46,6 +47,17 @@ var goodsDetailSchema = new Schema({
 	goodsid:String
 })
 var GoodsDetailModel = mongoose.model('goodsDetail',goodsDetailSchema);
+//创建商品订单列表
+var orderListSchema = new Schema({
+	user:String,
+	name:String,
+	goodsid:String,
+	orderid:String,
+	num:{type:Number},
+	address:String,
+	tel:String
+})
+var OrderListModel = mongoose.model('orderList',orderListSchema);
 //请求响应
 //获取商品列表
 router.get('/', function(req, res) {
@@ -189,6 +201,44 @@ router.post('/goodstotal', function(req, res) {
 		}
 	})
 })
+//切换收货地址
+router.post('/configadd', function(req, res) {
+	UserModel.findOne({name:req.body.user},function(err,doc){
+		if(!err){
+			doc.address.forEach(item => {
+				if(item.add == req.body.add){
+					item.select = true;
+				}else{
+					item.select = false;
+				}
+			})
+			doc.save(function(err){
+				if(!err){
+					res.send({msg:"ok"})
+				}
+			});
+		}
+	})
+})
+//新增收货地址
+router.post('/newadd', function(req, res) {
+	var name = req.body.name;
+	var tel = req.body.tel;
+	var add = req.body.add;
+	UserModel.updateOne({name:req.body.user},{$push:{address:[{name:name,tel:tel,add:add}]}},function(err){
+		if(!err){
+			res.send({msg:"ok"})
+		}
+	})
+})
+//删除收货地址
+router.post('/adddlt', function(req, res) {
+	UserModel.updateOne({name:req.body.user},{$pull:{address:{_id:req.body.addid}}},function(err){
+		if(!err){
+			res.send({msg:"ok"})
+		}
+	})
+})
 //购买商品
 router.post('/buygoods', function(req, res) {
 	var goods = req.body.buy;
@@ -204,6 +254,30 @@ router.post('/buygoods', function(req, res) {
 						}
 					}
 				})
+			}
+		})
+	})
+})
+//创建订单列表
+router.post('/order', function(req, res) {
+	var user = req.body.user;
+	var address = req.body.address;
+	var buy = req.body.buy;
+	var num = req.body.nums;
+	buy.forEach((item,index) => {
+		OrderListModel.create({
+			user:user,
+			name:address.name,
+			tel:address.tel,
+			address:address.add,
+			orderid:req.body.orderid,
+			goodsid:item,
+			num:num[index]
+		},function(err){
+			if(!err){
+				if(buy.length == (index+1)){
+					res.send({msg:"ok"})
+				}
 			}
 		})
 	})
@@ -277,7 +351,7 @@ router.post('/adminedit', function(req, res) {
 	var attr = req.body.attr.split(',');
 	// console.log(attr);
 	// console.log(req.body.attr)
-	GoodsDetailModel.update({goodsid:req.body.goodsid},{$set:{
+	GoodsDetailModel.updateOne({goodsid:req.body.goodsid},{$set:{
 		attr:attr,
 		price:req.body.price,
 		borned:req.body.borned,
@@ -306,6 +380,49 @@ router.post('/chartdata', function(req, res) {
 				seriesD.push(item.sale)
 			})
 			res.send({xdata:xdata,seriesD:seriesD})
+		}
+	})
+})
+//获取用户列表
+router.post('/getuser', function(req, res) {
+	UserModel.find({},function(err,docs){
+		if(!err){
+			res.send({varList:docs,msg:"ok"})
+		}
+	})
+})
+//获取订单列表
+router.post('/adminorderlist', function(req, res) {
+	OrderListModel.find({},function(err,docs){
+		if(!err){
+			res.send({varList:docs,msg:"ok"})
+		}
+	})
+})
+//根据用户名、goodsid、orderid确认订单
+router.post('/admindeleteorder', function(req, res) {
+	var user = req.body.user;
+    var goodsid = req.body.goodsid;
+    var orderid = req.body.orderid;
+	UserModel.deleteOne({user:user,goodsid:goodsid,orderid:orderid},function(err){
+		if(!err){
+			res.send({msg:"ok"})
+		}
+	})
+})
+//根据用户名获取收货地址
+router.post('/getadd', function(req, res) {
+	UserModel.findOne({name:req.body.user},function(err,doc){
+		if(!err){
+			res.send({varList:doc.address})
+		}
+	})
+})
+//根据用户名注销用户
+router.post('/admindeleteuser', function(req, res) {
+	UserModel.deleteOne({name:req.body.name},function(err){
+		if(!err){
+			res.send({msg:"ok"})
 		}
 	})
 })

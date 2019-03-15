@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>config</title>
+    <link rel="stylesheet" type="text/css" href="js/layui/css/layui.css">
+    <script src="js/layui/layui.js"></script>
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <style type="text/css">
+    h1 {
+        text-align: center;
+        color: red;
+        text-shadow: 3px 3px 5px #ccc;
+        font-size: 30px;
+        margin-top: 35px;
+        margin-bottom: 30px;
+        font-weight: bold;
+    }
+    td{
+        color: #333;
+        font-size: 14px;
+    }
+    </style>
+</head>
+
+<body>
+    <h1>用户账号管理</h1>
+    <table id="admin" lay-filter="test"></table>
+    <script type="text/html" id="barDemo">
+      <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">注销用户</a>
+    </script>
+</body>
+<script>
+var data = [];
+var baseURL = "http://localhost:3000";
+layui.use('table', function() {
+    var table = layui.table;
+    table.render({
+        elem: '#admin',
+        height: 'full-200',
+        data: data,
+        // page: true,
+        cols: [
+            [ //表头
+                { title: 'ID', width: 80, fixed: 'left', align: 'center', type: 'numbers' },
+                { field: 'name', title: '用户名', minWidth: 200, align: 'center' },
+                { field: 'pwd', title: '用户密码', minWidth: 200, sort: true, align: 'center' },
+                // { field: 'goods', title: '购物车商品', minWidth: 200, sort: true, align: 'center' },
+                { field: 'buy', title: '已购买', minWidth: 200, align: 'center' },
+                { fixed: 'right', title: '操作', width: 150, align: 'center', toolbar: '#barDemo' }
+            ]
+        ]
+    });
+    table.on('tool(test)', function(obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+        var data = obj.data; //获得当前行数据
+        var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+        var tr = obj.tr; //获得当前行 tr 的DOM对象
+        if (layEvent === 'del') { //删除
+            layer.confirm('确定注销此用户？', function(index) {
+                //向服务端发送删除指令
+                var name = data.name;
+                var ajaxdata = {
+                    name:name
+                }
+                $.ajax({
+                    type: "post",
+                    async: true,
+                    data: ajaxdata,
+                    url: baseURL + '/admindeleteuser',
+                    dataType: "json",
+                    success: function(msg) {
+                        layer.msg('删除成功！',{'icon':6,'time':1000})
+                        console.log(msg)
+                        if(msg.msg="ok"){
+                            obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                        }
+                    },
+                    error: function() {
+                        console.log('error')
+                    }
+                });
+            });
+        }
+    });
+
+});
+$.ajax({
+    type: "post",
+    async: true,
+    url: baseURL+'/getuser',
+    dataType: "json",
+    success: function(msg) {
+        data = msg.varList;
+        console.log(data)
+    },
+    error: function() {
+        console.log('error')
+    }
+});
+</script>
+
+</html>

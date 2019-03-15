@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>ECharts</title>
+    <script src="js/jquery.min.js"></script>
+   <!-- 引入ECharts文件 -->
+    <script src='js/echarts2.js'></script>
 </head>
 <body>
     <!-- 为ECharts准备一个具备大小（宽高）的DOM容器-->
     <div id='main' style='width:80%;height:600px;margin: 100px auto;'></div>
-    <script src="js/jquery.min.js"></script>
-   <!-- 引入ECharts文件 -->
-    <script src='js/echarts/echarts2.js'></script>
+    
     <script>
     	var baseURL = "http://localhost:3000";
     	var e = function(xdata,seriesD){
