@@ -52,10 +52,12 @@ var orderListSchema = new Schema({
 	user:String,
 	name:String,
 	goodsid:String,
+	goodsname:String,
 	orderid:String,
 	num:{type:Number},
 	address:String,
-	tel:String
+	tel:String,
+	img:String,
 })
 var OrderListModel = mongoose.model('orderList',orderListSchema);
 //请求响应
@@ -77,7 +79,7 @@ router.post('/goodsdetail', function(req, res) {
 })
 //根据商品id 进行评论
 router.post('/goodscom', function(req, res) {
-	GoodsDetailModel.update({goodsid:req.body.goods},{$push:{"comments":[{"user":req.body.user,"say":req.body.say,"sayTime":req.body.date}]}},function(err){
+	GoodsDetailModel.updateOne({goodsid:req.body.goods},{$push:{"comments":[{"user":req.body.user,"say":req.body.say,"sayTime":req.body.date}]}},function(err){
 		if(!err){
 			res.send({msg:'ok'})
 		}
@@ -245,9 +247,9 @@ router.post('/buygoods', function(req, res) {
 	var name = req.body.user;
 	var nums = req.body.nums;
 	goods.forEach((item,index) => {
-		UserModel.update({name:name},{$addToSet:{"buy":item},$pull:{goods:{goodsId:item}}},function(err){
+		UserModel.updateOne({name:name},{$addToSet:{"buy":item},$pull:{goods:{goodsId:item}}},function(err){
 			if(!err){
-				GoodsDetailModel.update({goodsid:item},{$inc:{sale:nums[index]}},function(err){
+				GoodsDetailModel.updateOne({goodsid:item},{$inc:{sale:nums[index]}},function(err){
 					if(!err){
 						if(nums.length-1 == index){
 							res.send({msg:'ok'})
@@ -264,6 +266,8 @@ router.post('/order', function(req, res) {
 	var address = req.body.address;
 	var buy = req.body.buy;
 	var num = req.body.nums;
+	var imgs = req.body.imgs;
+	var goodsname = req.body.goodsname;
 	buy.forEach((item,index) => {
 		OrderListModel.create({
 			user:user,
@@ -272,7 +276,9 @@ router.post('/order', function(req, res) {
 			address:address.add,
 			orderid:req.body.orderid,
 			goodsid:item,
-			num:num[index]
+			num:num[index],
+			goodsname: goodsname[index],
+			img:imgs[index]
 		},function(err){
 			if(!err){
 				if(buy.length == (index+1)){
@@ -305,7 +311,7 @@ router.post('/admin', function(req, res) {
 		}
 	})
 })
-//新增
+//新增商品
 router.post('/adminadd', function(req, res) {
 	var attr = req.body.attr.split(',');
 	var goodsid = new Date().getTime();
@@ -359,7 +365,7 @@ router.post('/adminedit', function(req, res) {
 		total:req.body.total
 	}},function(err){
 		if(!err){
-			GoodsListModel.update({goodsid:req.body.goodsid},{$set:{
+			GoodsListModel.updateOne({goodsid:req.body.goodsid},{$set:{
 			price:req.body.price,
 			url:req.body.url,}},function(err){
 				if(!err){
@@ -383,17 +389,17 @@ router.post('/chartdata', function(req, res) {
 		}
 	})
 })
-//获取用户列表
-router.post('/getuser', function(req, res) {
-	UserModel.find({},function(err,docs){
+//获取订单列表
+router.post('/adminorderlist', function(req, res) {
+	OrderListModel.find({},function(err,docs){
 		if(!err){
 			res.send({varList:docs,msg:"ok"})
 		}
 	})
 })
-//获取订单列表
-router.post('/adminorderlist', function(req, res) {
-	OrderListModel.find({},function(err,docs){
+//用户获取个人订单列表
+router.post('/userorderlist', function(req, res) {
+	OrderListModel.find({user:req.body.user},function(err,docs){
 		if(!err){
 			res.send({varList:docs,msg:"ok"})
 		}
@@ -404,7 +410,7 @@ router.post('/admindeleteorder', function(req, res) {
 	var user = req.body.user;
     var goodsid = req.body.goodsid;
     var orderid = req.body.orderid;
-	UserModel.deleteOne({user:user,goodsid:goodsid,orderid:orderid},function(err){
+	OrderListModel.deleteOne({user:user,goodsid:goodsid,orderid:orderid},function(err){
 		if(!err){
 			res.send({msg:"ok"})
 		}
@@ -415,6 +421,14 @@ router.post('/getadd', function(req, res) {
 	UserModel.findOne({name:req.body.user},function(err,doc){
 		if(!err){
 			res.send({varList:doc.address})
+		}
+	})
+})
+//获取用户列表
+router.post('/getuser', function(req, res) {
+	UserModel.find({},function(err,docs){
+		if(!err){
+			res.send({varList:docs,msg:"ok"})
 		}
 	})
 })
