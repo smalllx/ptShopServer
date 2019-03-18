@@ -55,11 +55,15 @@ var initTable = function(data){
                     { field: 'name', title: '收货人', minWidth: 200, align: 'center' },
                     { field: 'tel', title: '联系电话', minWidth: 200, align: 'center' },
                     { field: 'address', title: '收货地址', minWidth: 320, align: 'center' },
-                    { field: 'orderid', title: '下单时间', minWidth: 200, align: 'center',templet:function(d){if(d.orderid==undefined){return ''}else{return timestamp(d.orderid);}} },
+                    { field: 'orderid', title: '下单时间', minWidth: 200, align: 'center',templet:function(d){if(d.orderid==undefined){return ''}else{return timestamp(d.orderid)}} },
                     { fixed: 'right', title: '是否已发货', minWidth: 200, align: 'center',templet: '#stateTpl' },
-                    { fixed: 'right', title: '操作', width: 150, align: 'center', toolbar: '#barDemo' }
+                    { fixed: 'right', title: '操作', minWidth: 150, align: 'center', toolbar: '#barDemo' }
                 ]
             ]
+            ,done : function () {
+                //解决右侧无法fixed问题
+                $('.layui-table-fixed-r').removeClass('layui-hide');
+            }
         });
         table.on('tool(test)', function(obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
             var data = obj.data; //获得当前行数据
@@ -127,7 +131,6 @@ $(function(){
         dataType: "json",
         success: function(msg) {
             var data = msg.varList;
-            console.log(data)
             initTable(data)
         },
         error: function() {
