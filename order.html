@@ -30,70 +30,75 @@
     <script type="text/html" id="barDemo">
       <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">订单完成</a>
     </script>
+    <script type="text/html" id="stateTpl">
+        <input type="checkbox" user="{{d.user}}" name="{{d.orderid}}" lay-skin="switch" lay-filter="switchTest" lay-text="是|否" {{#  if(d.send==true){ }} checked {{#  }  }} >
+    </script>
 </body>
 <script>
-var data = [];
 var baseURL = "http://localhost:3000";
-layui.use('table', function() {
-    var table = layui.table;
-    table.render({
-        elem: '#admin',
-        height: 'full-200',
-        data: data,
-        // page: true,
-        cols: [
-            [ //表头
-                { title: 'ID', width: 80, fixed: 'left', align: 'center', type: 'numbers' },
-                { field: 'user', title: '用户名', minWidth: 200, align: 'center' },
-                { field: 'goodsid', title: '商品id', minWidth: 200, sort: true, align: 'center' },
-                { field: 'goodsname', title: '商品名称', minWidth: 320, align: 'center' },
-                // { field: 'goods', title: '购物车商品', minWidth: 200, sort: true, align: 'center' },
-                { field: 'num', title: '购买数量', minWidth: 200, align: 'center',sort: true,},
-                { field: 'name', title: '收货人', minWidth: 200, align: 'center' },
-                { field: 'tel', title: '联系电话', minWidth: 200, align: 'center' },
-                { field: 'address', title: '收货地址', minWidth: 320, align: 'center' },
-                { field: 'orderid', title: '下单时间', minWidth: 200, align: 'center',templet:function(d){if(d.orderid==undefined){return ''}else{return timestamp(d.orderid);}} },
-                { fixed: 'right', title: '操作', width: 150, align: 'center', toolbar: '#barDemo' }
+var initTable = function(data){
+    layui.use('table', function() {
+        var table = layui.table;
+        table.render({
+            elem: '#admin',
+            height: 'full-200',
+            data: data,
+            // page: true,
+            cols: [
+                [ //表头
+                    // { title: 'ID', width: 80,align: 'center', type: 'numbers' },
+                    {  fixed: 'left', field: 'user', title: '用户名', minWidth: 200, align: 'center' },
+                    { field: 'goodsid', title: '商品id', minWidth: 200, sort: true, align: 'center' },
+                    { field: 'goodsname', title: '商品名称', minWidth: 320, align: 'center' },
+                    // { field: 'goods', title: '购物车商品', minWidth: 200, sort: true, align: 'center' },
+                    { field: 'num', title: '购买数量', minWidth: 200, align: 'center',sort: true,},
+                    { field: 'name', title: '收货人', minWidth: 200, align: 'center' },
+                    { field: 'tel', title: '联系电话', minWidth: 200, align: 'center' },
+                    { field: 'address', title: '收货地址', minWidth: 320, align: 'center' },
+                    { field: 'orderid', title: '下单时间', minWidth: 200, align: 'center',templet:function(d){if(d.orderid==undefined){return ''}else{return timestamp(d.orderid);}} },
+                    { fixed: 'right', title: '是否已发货', minWidth: 200, align: 'center',templet: '#stateTpl' },
+                    { fixed: 'right', title: '操作', width: 150, align: 'center', toolbar: '#barDemo' }
+                ]
             ]
-        ]
-    });
-    table.on('tool(test)', function(obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
-        var data = obj.data; //获得当前行数据
-        var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
-        var tr = obj.tr; //获得当前行 tr 的DOM对象
-        if (layEvent === 'del') { //删除
-            layer.confirm('确定完成此订单？', function(index) {
-                //向服务端发送删除指令
-                var user = data.user;
-                var goodsid = data.goodsid;
-                var orderid = data.orderid;
-                var ajaxdata = {
-                    user:user,
-                    goodsid:goodsid,
-                    orderid:orderid
-                }
-                $.ajax({
-                    type: "post",
-                    async: true,
-                    data: ajaxdata,
-                    url: baseURL + '/admindeleteorder',
-                    dataType: "json",
-                    success: function(msg) {
-                        layer.msg('已完成！',{'icon':6,'time':1000})
-                        console.log(msg)
-                        if(msg.msg="ok"){
-                            obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
-                        }
-                    },
-                    error: function() {
-                        console.log('error')
+        });
+        table.on('tool(test)', function(obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            var tr = obj.tr; //获得当前行 tr 的DOM对象
+            if (layEvent === 'del') { //删除
+                layer.confirm('确定完成此订单？', function(index) {
+                    //向服务端发送删除指令
+                    var user = data.user;
+                    var goodsid = data.goodsid;
+                    var orderid = data.orderid;
+                    var ajaxdata = {
+                        user:user,
+                        goodsid:goodsid,
+                        orderid:orderid
                     }
+                    $.ajax({
+                        type: "post",
+                        async: true,
+                        data: ajaxdata,
+                        url: baseURL + '/admindeleteorder',
+                        dataType: "json",
+                        success: function(msg) {
+                            layer.msg('已完成！',{'icon':6,'time':1000})
+                            console.log(msg)
+                            if(msg.msg="ok"){
+                                obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                            }
+                        },
+                        error: function() {
+                            console.log('error')
+                        }
+                    });
                 });
-            });
-        }
+            }
+        });
     });
+}
 
-});
 /*时间戳转字符串*/
 timestamp=function(d){
     var d = parseInt(d);
@@ -113,19 +118,56 @@ timestamp=function(d){
     var str = y+"-"+m+"-"+d+" "+h+":"+M+":"+S;  
     return str;
 }
-$.ajax({
-    type: "post",
-    async: true,
-    url: baseURL+'/adminorderlist',
-    dataType: "json",
-    success: function(msg) {
-        data = msg.varList;
-        console.log(data)
-    },
-    error: function() {
-        console.log('error')
-    }
-});
+$(function(){
+    //获取表格数据
+    $.ajax({
+        type: "post",
+        async: true,
+        url: baseURL+'/adminorderlist',
+        dataType: "json",
+        success: function(msg) {
+            var data = msg.varList;
+            console.log(data)
+            initTable(data)
+        },
+        error: function() {
+            console.log('error')
+        }
+    });
+    // 监听表格中的开关
+    layui.use(['form','element','layer'], function(){
+        var element = layui.element;
+        form = layui.form;
+        layer = layui.layer;
+        //监听开关的选择
+        form.on('switch(switchTest)', function(obj){
+            if(obj.elem.checked){
+                var key = {'orderid':this.name,user:$(this).attr('user')}
+                layer.load();
+                // console.log(key)
+                $.ajax({
+                    type: 'POST',
+                    url: baseURL+'/sendorder',
+                    data: key,
+                    async: true,
+                    success:function(msg) {
+                        console.log(msg)
+                        if(msg.msg=="ok"){
+                            layer.msg("发货成功",{"icon":6,"delay":1500})
+                            $(obj.elem).attr('disabled','true')
+                        }
+                        layer.closeAll('loading')
+                    },
+                    error:function(msg){
+                        console.log('error')
+                    },dataType:'json'
+                });
+            }
+            
+        });
+    })
+})
+
 </script>
 
 </html>

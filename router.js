@@ -58,6 +58,7 @@ var orderListSchema = new Schema({
 	address:String,
 	tel:String,
 	img:String,
+	send:{type:Boolean,default:false}
 })
 var OrderListModel = mongoose.model('orderList',orderListSchema);
 //请求响应
@@ -402,6 +403,16 @@ router.post('/userorderlist', function(req, res) {
 	OrderListModel.find({user:req.body.user},function(err,docs){
 		if(!err){
 			res.send({varList:docs,msg:"ok"})
+		}
+	})
+})
+//根据orderid修改发货状态
+router.post('/sendorder', function(req, res) {
+	var user = req.body.user;
+    var orderid = req.body.orderid;
+	OrderListModel.updateOne({user:user,orderid:orderid},{$set:{send:true}},function(err){
+		if(!err){
+			res.send({msg:"ok"})
 		}
 	})
 })
