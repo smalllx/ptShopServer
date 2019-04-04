@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="js/layui/css/layui.css">
     <script src="js/layui/layui.js"></script>
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="js/jquery.form.js"></script>
     <style type="text/css">
     	h2{
     		padding: 20px;
@@ -27,7 +28,7 @@
 
 <body>
 	<h2>添加商品</h2>
-    <form class="layui-form" action="">
+    <form class="layui-form" action="" id="form_con" enctype="multipart/form-data">
         <div class="layui-form-item">
             <label class="layui-form-label">商品名称：</label>
             <div class="layui-input-block">
@@ -35,9 +36,10 @@
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">商品图片地址：</label>
+            <label class="layui-form-label">商品图片：</label>
             <div class="layui-input-block">
-                <input type="text" name="url" required lay-verify="required" placeholder="请输入图片路径" autocomplete="off" class="layui-input">
+                <input type="file" name="url" id="img_upload" accept="image/*" multiple="false" lay-verify="required">
+                <!-- <input type="text" name="url" required placeholder="请输入图片路径" autocomplete="off" class="layui-input"> -->
             </div>
         </div>
         <div class="layui-form-item">
@@ -79,7 +81,7 @@
         </div> -->
         <div class="layui-form-item">
             <div class="layui-input-block">
-                <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                <button class="layui-btn"  onclick="submit_con()">立即提交</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
             </div>
         </div>
@@ -106,63 +108,105 @@
     //     }
     // }
     // setOnchangeListener();
+    function getNowFormatDate() {
+        var date = new Date();
+        var seperator1 = "-";
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate();
+        if (month >= 1 && month <= 9) {
+            month = "0" + month;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+            strDate = "0" + strDate;
+        }
+        var currentdate = year + seperator1 + month + seperator1 + strDate;
+        return currentdate;
+    }
     var getid = function(index){
+        console.log(getNowFormatDate())
     	layui.use(['form','laydate','layer'], function() {
 	        var form = layui.form;
 	        var layer = layui.layer;
 	        var laydate = layui.laydate;
 		    //执行一个laydate实例
 		    laydate.render({
-		    	elem: '#test1' //指定元素
+		    	elem: '#test1', //指定元素
+                max:getNowFormatDate()
 		    });
-	        //监听提交
-	        form.on('submit(formDemo)', function(data) {
-	        	fAttr = [];
-	            //layer.msg(JSON.stringify(data.field));
-	            //console.log(JSON.stringify(data.field))
-                //var file=$("#img_upload")[0].files[0];
-                //console.log(file)
-                //if(file==null)
-                //   return;
-                //var fileData=new FormData();
-                //fileData.append('file',file);
-	            var formdata = data.field;
-	           	// $.each($('input:checkbox'),function(){
-	            //     if(this.checked){
-	            //     	var key = this.name;
-	            //     	delete(formdata[key])
-	            //        fAttr.push($(this).val());
-	            //     }
-	            // });
-	            // fAttr = fAttr.toString()
-	            // formdata.attr = fAttr;
-	            //formdata.id = id;
-	            // console.log(JSON.stringify(formdata))
-                console.log(formdata)
-	            $.ajax({
-				    type: "post",
-				    async: true,
-				    url: baseURL+'/adminadd',
-				    data:formdata,
-				    dataType: "json",
-				    success: function(msg) {
-                        parent.parent.layer.msg("添加成功！",{"icon":6,"time":2000});
-                            parent.layer.close(index);
-                            parent.location.reload();
-                        // if(msg.msg=="ok"){
-                        //     parent.parent.layer.msg("添加成功！",{"icon":6,"time":2000});
-                        //     parent.layer.close(index);
-                        //     parent.location.reload();
-                        // }
-				    },
-				    error: function(err) {
-                        console.log(err)
-				        console.log('error')
-				    }
-				});
+	        
+	   //      form.on('submit(formDemo)', function(data) {
+	   //      	fAttr = [];
+	   //          //layer.msg(JSON.stringify(data.field));
+	   //          //console.log(JSON.stringify(data.field))
+    //             //var file=$("#img_upload")[0].files[0];
+    //             //console.log(file)
+    //             //if(file==null)
+    //             //   return;
+    //             //var fileData=new FormData();
+    //             //fileData.append('file',file);
+	   //          var formdata = data.field;
+	   //         	// $.each($('input:checkbox'),function(){
+	   //          //     if(this.checked){
+	   //          //     	var key = this.name;
+	   //          //     	delete(formdata[key])
+	   //          //        fAttr.push($(this).val());
+	   //          //     }
+	   //          // });
+	   //          // fAttr = fAttr.toString()
+	   //          // formdata.attr = fAttr;
+	   //          //formdata.id = id;
+	   //          // console.log(JSON.stringify(formdata))
+    //             console.log(formdata)
+	   //          $.ajax({
+				//     type: "post",
+				//     async: true,
+				//     url: baseURL+'/adminadd',
+				//     data:formdata,
+				//     dataType: "json",
+				//     success: function(msg) {
+    //                     parent.parent.layer.msg("添加成功！",{"icon":6,"time":2000});
+    //                         parent.layer.close(index);
+    //                         parent.location.reload();
+    //                     // if(msg.msg=="ok"){
+    //                     //     parent.parent.layer.msg("添加成功！",{"icon":6,"time":2000});
+    //                     //     parent.layer.close(index);
+    //                     //     parent.location.reload();
+    //                     // }
+				//     },
+				//     error: function(err) {
+    //                     console.log(err)
+				//         console.log('error')
+				//     }
+				// });
 
-	        });
+	   //      });
     	});
+    }
+    //监听提交
+    var submit_con = function(){
+        var options = {
+            url: baseURL+'/adminadd',
+            type: "post",
+            // dataType: "json",
+            resetForm: true,
+            success: function(msg){
+                console.log(msg)
+                layui.use('layer', function() {
+                    var layer = layui.layer;
+                    parent.layer.msg("添加成功！",{"icon":6,"time":2000});
+                    parent.location.reload();
+                })
+            },
+            error:function(err){
+                layui.use('layer', function() {
+                    var layer = layui.layer;
+                    parent.layer.msg("添加失败！",{"icon":5,"time":2000});
+                    parent.location.reload();
+                })
+            }
+        }
+        $("#form_con").ajaxSubmit(options);
     }
     </script>
 </body>

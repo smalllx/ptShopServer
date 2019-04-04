@@ -1,4 +1,9 @@
 var express = require('express')
+
+var fs = require('fs')
+var mutipart= require('connect-multiparty');
+var mutipartMiddeware = mutipart();
+
 var router = express.Router();
 var mongoose = require('mongoose')
 var url = require('url')
@@ -313,22 +318,27 @@ router.post('/admin', function(req, res) {
 	})
 })
 //新增商品
-router.post('/adminadd', function(req, res) {
+router.post('/adminadd',mutipartMiddeware, function(req, res) {
 	var attr = req.body.attr.split(',');
 	var goodsid = new Date().getTime();
+
+    var oldpath = req.files.url.path;
+    fs.copyFile(oldpath, '../bsVue-master/static/img/'+goodsid+'.jpg', (err) => {
+	    if (err) throw err;
+	});
 	GoodsDetailModel.create({"goodsid":goodsid,
-							"url":req.body.url,
-							"attr":attr,
-							"total":req.body.total,
-							"borned":req.body.borned,
-							"price":req.body.price,
-							"addTime":req.body.addTime,
-							"sale":0,
-							"introduct":req.body.introduct},function(err){
+						"url":'../static/img/'+goodsid+'.jpg',
+						"attr":attr,
+						"total":req.body.total,
+						"borned":req.body.borned,
+						"price":req.body.price,
+						"addTime":req.body.addTime,
+						"sale":0,
+						"introduct":req.body.introduct},function(err){
 		if(!err){
 			GoodsListModel.create({ "goodsid":goodsid,
 									"introduct":req.body.introduct,
-									"url":req.body.url,
+									"url":'../static/img/'+goodsid+'.jpg',
 									"price":req.body.price},function(err2){
 				if(!err2){
 					res.send({msg:"ok"})

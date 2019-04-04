@@ -40,12 +40,13 @@ layui.use('table', function() {
         elem: '#admin',
         height: 'full-200',
         data: data,
+        limit: data.length,
         // page: true,
         cols: [
             [ //表头
                 { title: 'ID', width: 80, fixed: 'left', align: 'center', type: 'numbers' },
                 { field: 'name', title: '用户名', minWidth: 200, align: 'center' },
-                { field: 'pwd', title: '用户密码', minWidth: 200, sort: true, align: 'center' },
+                // { field: 'pwd', title: '用户密码', minWidth: 200, sort: true, align: 'center' },
                 // { field: 'goods', title: '购物车商品', minWidth: 200, sort: true, align: 'center' },
                 { field: 'buy', title: '已购买', minWidth: 200, align: 'center' },
                 { fixed: 'right', title: '操作', width: 150, align: 'center', toolbar: '#barDemo' }
